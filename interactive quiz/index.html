@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .quiz-container {
+            max-width: 600px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .question {
+            margin-bottom: 20px;
+        }
+        .options {
+            list-style-type: none;
+            padding: 0;
+        }
+        .options li {
+            margin: 10px 0;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        #result {
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <h1>Interactive Quiz</h1>
+    <div class="question" id="questionContainer"></div>
+    <ul class="options" id="optionsContainer"></ul>
+    <button id="nextButton">Next Question</button>
+    <div id="result"></div>
+    <div id="score" style="margin-top: 20px; text-align:center;"></div>
+</div>
+
+<script>
+    const questions = [
+        {
+            question: "What is the capital of France?",
+            options: ["Berlin", "Madrid", "Paris", "Lisbon"],
+            answer: "Paris"
+        },
+        {
+            question: "Which planet is known as the Red Planet?",
+            options: ["Earth", "Mars", "Jupiter", "Saturn"],
+            answer: "Mars"
+        },
+        {
+            question: "Who wrote 'Hamlet'?",
+            options: ["Charles Dickens", "William Shakespeare", "Mark Twain", "Jane Austen"],
+            answer: "William Shakespeare"
+        },
+        {
+            question: "What is the largest ocean on Earth?",
+            options: ["Atlantic Ocean", "Indian Ocean", "Arctic Ocean", "Pacific Ocean"],
+            answer: "Pacific Ocean"
+        },
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+
+    function loadQuestion() {
+        const questionContainer = document.getElementById('questionContainer');
+        const optionsContainer = document.getElementById('optionsContainer');
+        
+        const currentQuestion = questions[currentQuestionIndex];
+        
+        questionContainer.textContent = currentQuestion.question;
+        
+        optionsContainer.innerHTML = '';
+        
+        currentQuestion.options.forEach(option => {
+            const li = document.createElement('li');
+            li.innerHTML = `<input type="radio" name="option" value="${option}"> ${option}`;
+            optionsContainer.appendChild(li);
+        });
+    }
+
+    function checkAnswer() {
+        const selectedOption = document.querySelector('input[name="option"]:checked');
+        
+        if (selectedOption) {
+            const answer = selectedOption.value;
+
+            if (answer === questions[currentQuestionIndex].answer) {
+                score++; // Increment score for correct answer
+                return true; // Correct answer
+            } else {
+                return false; // Incorrect answer
+            }
+        }
+        
+        return null; // No option selected
+    }
+
+    document.getElementById('nextButton').addEventListener('click', () => {
+        const resultContainer = document.getElementById('result');
+        
+        const isCorrect = checkAnswer();
+        
+        if (isCorrect === true) {
+            resultContainer.textContent = 'Correct!';
+        } else if (isCorrect === false) {
+            resultContainer.textContent = 'Incorrect! The correct answer was ' + questions[currentQuestionIndex].answer + '.';
+        } else {
+            resultContainer.textContent = 'Please select an option.';
+            return; // Do not proceed without selection
+        }
+
+        currentQuestionIndex++;
+
+        if (currentQuestionIndex < questions.length) {
+            loadQuestion();
+        } else {
+            resultContainer.textContent += ' Quiz completed!';
+            
+            // Display final score
+            document.getElementById('score').textContent = `Your final score is ${score} out of ${questions.length}.`;
+            
+            document.getElementById('nextButton').disabled = true; // Disable button after quiz completion
+        }
+    });
+
+    // Load the first question when the page loads
+    loadQuestion();
+</script>
+
+</body>
+</html>
